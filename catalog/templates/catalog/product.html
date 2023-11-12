@@ -16,9 +16,14 @@
                         <li> Категория: {{product.category}} </li>
                         <li> Цена: {{product.price}} тенге за кг </li>
                         <li> Дата создания: {{product.creation_date}} </li>
+                        <li> Версия: {% for v in version %}
+                                     {{v.number_version}}
+                            <li></li>
+                        </li>
+                        {% endfor%}
                     </ul>
                     <button type="button" class="btn btn-block btn-outline-primary">Купить</button>
-                    <button type="button" class="btn btn-block btn-outline-primary">Назад</button>
+                    <a href="{% url 'catalog:home' %}" class="btn btn-block btn-outline-primary">Назад</a>
                 </div>
             </div>
         </div>

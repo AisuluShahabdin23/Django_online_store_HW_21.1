@@ -49,7 +49,6 @@ class BlogUpdateView(UpdateView):
             new_blog = form.save()
             new_blog.slug = slugify(new_blog.title)
             new_blog.save()
-
         return super().form_valid(form)
 
     def get_success_url(self):

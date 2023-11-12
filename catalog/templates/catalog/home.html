@@ -6,8 +6,10 @@
         <h1 class="display-4">Magnum</h1>
         <p class="lead">Magnum - это крупнейшая торгово-розничная сеть Казахстана.
             Основной деятельностью является реализация товаров широкого потребления.</p>
+        <div class="col-5 mb-5">
+            <a class="btn btn-outline-primary" href=" {% url 'catalog:create' %} ">Добавить продукт</a>
+        </div>
     </div>
-
         <div class="container mt-5">
             <div class="row text-center">
                 {% for object in object_list %}
@@ -18,7 +20,9 @@
                             </div>
                             <div class="card-body">
                                 <h3 class="card-text">{{ object.description|truncatechars:100 }}</h3>
-                                <a class="p-2 btn btn-outline-primary"  href="/product/{{ object.pk }}">Подробнее</a>
+                                <a class="btn btn-sm mb-2 btn-light btn-outline-success" href="/product/{{ object.pk }}">Подробнее</a>
+                                <a class="btn btn-sm mb-2 btn-light btn-outline-primary" href="{% url 'catalog:update' object.pk %}">Редактировать</a>
+                                <a class="btn btn-sm btn-outline-danger" href="{% url 'catalog:delete' object.pk %}">Удалить</a>
                             </div>
                         </div>
                     </div>

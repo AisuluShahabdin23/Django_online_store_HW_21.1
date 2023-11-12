@@ -24,8 +24,8 @@ class Product(models.Model):
     photo = models.ImageField(upload_to='db_store/', **NULLABLE, verbose_name='Picture')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Category name')
     price = models.FloatField(**NULLABLE, verbose_name='Product price')
-    creation_date = models.DateField(auto_now=False, auto_now_add=True, verbose_name='Creation date')
-    changing_date = models.DateField(auto_now=True, auto_now_add=False, verbose_name='Last changed date')
+    creation_date = models.DateTimeField(verbose_name='Creation date')
+    changing_date = models.DateTimeField(verbose_name='Last changed date', **NULLABLE)
 
     def __str__(self):
         return f'{self.name} ({self.category}) тг.'
@@ -33,3 +33,18 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
+        ordering = ('name',)
+
+
+class Version(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Product')
+    number_version = models.IntegerField(verbose_name='Version number')
+    title_version = models.CharField(max_length=50, verbose_name='Version name')
+    is_active = models.BooleanField(default=True, verbose_name='Current version indicator')
+
+    def __str__(self):
+        return f'{self.product} {self.number_version}'
+
+    class Meta:
+        verbose_name = 'Version'
+        verbose_name_plural = 'Versions'
