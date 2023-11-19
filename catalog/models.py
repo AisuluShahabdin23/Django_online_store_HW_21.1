@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import PROTECT
+from django.conf import settings
 
 # Create your models here.
 NULLABLE = {'null': True, 'blank': True}
@@ -26,6 +26,8 @@ class Product(models.Model):
     price = models.FloatField(**NULLABLE, verbose_name='Product price')
     creation_date = models.DateTimeField(verbose_name='Creation date')
     changing_date = models.DateTimeField(verbose_name='Last changed date', **NULLABLE)
+
+    #user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='user')
 
     def __str__(self):
         return f'{self.name} ({self.category}) тг.'
