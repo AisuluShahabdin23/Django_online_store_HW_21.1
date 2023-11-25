@@ -9,10 +9,11 @@ class StyleFormMixin:
             field.widget.attrs['class'] = 'form-control'
 
 
-class ProductForm(StyleFormMixin, forms.ModelForm):
+class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ('name', 'description', 'photo', 'creation_date', 'price', 'category')
+        exclude = ('user',)
+        fields = ('name', 'description', 'photo', 'creation_date', 'price', 'category', 'is_published')
 
     def clean_name(self):
         forbidden_words = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
@@ -29,6 +30,12 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
             if word.lower() in cleaned_data:
                 raise forms.ValidationError('Запрещенное слово')
         return cleaned_data
+
+
+class ProductModerForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ('is_published', 'description', 'category',)
 
 
 class VersionForm(forms.ModelForm):

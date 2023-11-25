@@ -19,7 +19,7 @@
           <div class="card-footer"></div>
         </div>
       </div>
-  {% if object %}
+
       <div class="col-6">
           <div class="card">
             <div class="card-header">
@@ -31,14 +31,11 @@
                 {{ formset.management_form }}
                 {% for form in formset.forms %}
                     {{ form.as_p }}
-                {% if forloop.revcounter0 != 0 %}
-                <hr>
-                {% endif %}
                 {% endfor %}
+                <hr>
             </div>
             <div class="card-footer"></div>
           </div>
       </div>
-  {% endif %}
   </form>
 {% endblock %}

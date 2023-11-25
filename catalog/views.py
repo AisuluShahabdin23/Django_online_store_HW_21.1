@@ -1,8 +1,11 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.forms import inlineformset_factory
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, ProductModerForm
 from catalog.models import Product, Version  # , Category
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
@@ -37,7 +40,7 @@ def contacts(request):
     return render(request, 'catalog/contacts.html', context)
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = 'catalog/product.html'
 
@@ -52,11 +55,19 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:home')
 
+    def form_valid(self, form):
+        if form.is_valid:
+            new_product = form.save()
+            new_product.user = self.request.user
+            new_product.save()
+        return super().form_valid(form)
 
-class ProductUpdateView(UpdateView):
+
+class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    #success_url = reverse_lazy('catalog:home')
+    permission_required = 'catalog.change_product'
+    success_url = reverse_lazy('catalog:home')
 
     def get_success_url(self):
         return reverse('catalog:update', args=[self.kwargs.get('pk')])
@@ -80,11 +91,23 @@ class ProductUpdateView(UpdateView):
             return self.form_invalid(form)
         return super().form_valid(form)
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if (self.request.user != self.object.user and not self.request.user.is_staff
+                and not self.request.user.is_superuser and self.request.user.has_perm('catalog.product_published')):
+            raise Http404
+        return self.object
 
-class ProductDeleteView(DeleteView):
+    def get_form_class(self):
+        if self.request.user.has_perm('catalog.product_published'):
+            return ProductModerForm
+        return ProductForm
+
+
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:home')
 
 
-class VersionListView(ListView):
+class VersionListView(LoginRequiredMixin, ListView):
     model = Version

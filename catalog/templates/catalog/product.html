@@ -18,9 +18,11 @@
                         <li> Дата создания: {{product.creation_date}} </li>
                         <li> Версия: {% for v in version %}
                                      {{v.number_version}}
-                            <li></li>
+                                    {% endfor%}
+                        <li></li>
                         </li>
-                        {% endfor%}
+                        <li> Автор: {{object.user|default:'Не указан'}}</li>
+                        <li> Опубликован: {{product.is_published}} </li>
                     </ul>
                     <button type="button" class="btn btn-block btn-outline-primary">Купить</button>
                     <a href="{% url 'catalog:home' %}" class="btn btn-block btn-outline-primary">Назад</a>
