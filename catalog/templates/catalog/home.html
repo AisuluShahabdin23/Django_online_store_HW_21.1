@@ -22,12 +22,12 @@
                             </div>
                             <div class="card-body">
                                 <h3 class="card-text">{{ object.description|truncatechars:100 }}</h3>
-                                <a class="btn btn-sm mb-2 btn-light btn-outline-success" href="/product/{{ object.pk }}">Подробнее</a>
+                                <a class="btn btn-sm mb-2 btn-light btn-outline-success" href="{% url 'catalog:product' object.pk%}">Подробнее</a>
                                 {% if user.is_authenticated %}
-                                    {% if perms.users.change_product %}
+                                    {% if perms.users.change and user == object.user %}
                                         <a class="btn btn-sm mb-2 btn-light btn-outline-primary" href="{% url 'catalog:update' object.pk %}">Редактировать</a>
                                     {% endif %}
-                                    {% if perms.users.delete_product %}
+                                    {% if perms.users.delete %}
                                         <a class="btn btn-sm btn-outline-danger" href="{% url 'catalog:delete' object.pk %}">Удалить</a>
                                     {% endif %}
                                 {% endif %}

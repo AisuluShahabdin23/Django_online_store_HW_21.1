@@ -1,5 +1,6 @@
 from django.urls import path
 from catalog.apps import CatalogConfig
+from catalog.forms import ProductModerForm
 from catalog.views import contacts, ProductDetailView, ProductListView, ProductCreateView, ProductUpdateView, \
     ProductDeleteView
 

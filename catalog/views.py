@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 from django.forms import inlineformset_factory
 from django.http import Http404
 from django.shortcuts import render
@@ -19,9 +19,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 #     return render(request, 'catalog/home.html', context)
 
 
-class ProductListView(ListView):
+class ProductListView(PermissionRequiredMixin, ListView):
     model = Product
     template_name = 'catalog/home.html'
+    permission_required = 'catalog.product'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,14 +64,14 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(PermissionRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    permission_required = 'catalog.change_product'
+    permission_required = 'catalog.update'
     success_url = reverse_lazy('catalog:home')
 
     def get_success_url(self):
-        return reverse('catalog:update', args=[self.kwargs.get('pk')])
+        return reverse('catalog.update', args=[self.kwargs.get('pk')])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -91,6 +92,11 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
             return self.form_invalid(form)
         return super().form_valid(form)
 
+    # def test_func(self):
+    #     if self.request.user.is_staff:
+    #         return False
+    #     return self.request.user == Product.objects.get(pk=self.kwargs['pk']).user
+
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
         if (self.request.user != self.object.user and not self.request.user.is_staff
@@ -99,7 +105,7 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
         return self.object
 
     def get_form_class(self):
-        if self.request.user.has_perm('catalog.product_published'):
+        if self.request.user.is_staff is True:
             return ProductModerForm
         return ProductForm
 

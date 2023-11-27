@@ -1,8 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-from users.models import User
-
 # Create your models here.
 NULLABLE = {'null': True, 'blank': True}
 
@@ -29,7 +27,7 @@ class Product(models.Model):
     creation_date = models.DateTimeField(verbose_name='Creation date')
     changing_date = models.DateTimeField(verbose_name='Last changed date', **NULLABLE)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, **NULLABLE)
     is_published = models.BooleanField(default=False, verbose_name='Опубликовано')
 
     def __str__(self):
