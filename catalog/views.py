@@ -9,6 +9,8 @@ from catalog.forms import ProductForm, VersionForm, ProductModerForm
 from catalog.models import Product, Version  # , Category
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from catalog.services import cache_category
+
 
 # def home(request):
 #     category_list = Category.objects.all()
@@ -27,6 +29,9 @@ class ProductListView(PermissionRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get_queryset(self):
+        return cache_category()
 
 
 def contacts(request):
@@ -105,7 +110,7 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         return self.object
 
     def get_form_class(self):
-        if self.request.user.is_staff is True:
+        if self.request.user.is_staff:
             return ProductModerForm
         return ProductForm
 
